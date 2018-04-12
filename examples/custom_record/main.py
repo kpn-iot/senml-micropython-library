@@ -3,8 +3,7 @@ from senml_record import SenmlRecord
 from senml_unit import SenmlUnits
 from senml_kpn_names import SenmlNames
 
-import datetime
-import time
+import utime as time
 
 
 class Coordinates(SenmlRecord):
@@ -40,7 +39,7 @@ class Coordinates(SenmlRecord):
         this is overridden so we can pass on the values to the internal objects. It's also stored in the parent
         so that a 'get-value' still returns the array.
         '''
-        SenmlRecord.value.fset(self, value)                     # do this first, it will check the data type
+        self._value = value                     # micropython doesn't support calling setter of parent property, do it manually
         if value:
             self._lat.value = value[0]
             self._lon.value = value[1]
@@ -55,7 +54,8 @@ class Coordinates(SenmlRecord):
         '''set the time stamp.
         this is overridden so we can pass on the values to the internal objects.
         '''
-        SenmlRecord.time.fset(self, value)  # do this first, it will check the data type
+        self._check_number_type(value, 'time')      # micropython doesn't support calling setter of parent property, do it manually
+        self._time = value
         self._lat.time = value
         self._lon.time = value
         self._alt.time = value
@@ -65,7 +65,8 @@ class Coordinates(SenmlRecord):
         '''set the time stamp.
         this is overridden so we can pass on the values to the internal objects.
         '''
-        SenmlRecord.update_time.fset(self, value)  # do this first, it will check the data type
+        self._check_number_type(value, 'update_time')   # micropython doesn't support calling setter of parent property, do it manually
+        self._update_time = value
         self._lat.update_time = value
         self._lon.update_time = value
         self._alt.update_time = value
@@ -76,7 +77,7 @@ class Coordinates(SenmlRecord):
         this is overridden so we can pass on the values to the internal objects.
         This is needed so that the child objects can correctly take base time (optionally also base-sum, base-value) into account
         '''
-        SenmlRecord._parent.fset(self, value)  # do this first, it will check the data type
+        self.__parent = value  # micropython doesn't support calling setter of parent property, do it manually
         self._lat._parent = value
         self._lon._parent = value
         self._alt._parent = value
@@ -89,11 +90,13 @@ loc2 = Coordinates("location", value=[52.0259, 5.4775, 230])
 pack.append(loc)
 pack.append(loc2)
 
+print(loc._parent.name)
+
 loc.value = [51.0259, 4.4775, 10]
 print(pack.to_json())
 
-random_time = datetime.datetime.strptime('Jan 1 2018  1:33PM', '%b %d %Y %I:%M%p')
-pack.base_time = time.mktime(random_time.timetuple())                       # set a base time
-loc.time = time.mktime(datetime.datetime.now().timetuple())                             # all child objects will receive the time value
+pack.base_time = time.time()                       # set a base time
+time.sleep(2)
+loc.time = time.time()                            # all child objects will receive the time value
 print(pack.to_json())
 
