@@ -135,23 +135,31 @@ class SenmlRecord(object):
         :return: a senml dictionary representation of the record
         '''
         result = { }
-        
+
         if self.name:
-            naming_map['n'] = self.name
-        if isinstance(self._value, bool):
+            result[naming_map['n']] = self.name
+
+        if self._sum:
+            if self._parent and self._parent.base_sum:
+                result[naming_map['s']] = self._sum - self._parent.base_sum
+            else:
+                result[naming_map['s']] = self._sum
+        elif isinstance(self._value, bool):
             result[naming_map['vb']] = self._value
         elif isinstance(self._value, int) or isinstance(self._value, float):
             if self._parent and self._parent.base_value:
                 result[naming_map['v']] = self._value - self._parent.base_value
             else:
                 result[naming_map['v']] = self._value
-        elif isinstance(self._value, str):
+        elif isinstance(self._value, basestring):
             result[naming_map['vs']] = self._value
         elif isinstance(self._value, bytearray):
             if naming_map['vd'] == 'vd':                # neeed to make a distinction between json (needs base64) and cbor (needs binary)
-                result[naming_map['vd']] = ubinascii.b2a_base64(self._value)
+                result[naming_map['vd']] = base64.b64encode(self._value)
             else:
                 result[naming_map['vd']] = self._value
+        else:
+            raise Exception("sum or value of type bootl, number, string or byte-array is required")
 
         if self._time:
             if self._parent and self._parent.base_time:
@@ -164,12 +172,6 @@ class SenmlRecord(object):
 
         if self._update_time:
             result[naming_map['ut']] = self._update_time
-
-        if self._sum:
-            if self._parent and self._parent.base_sum:
-                result[naming_map['s']] = self._sum - self._parent.base_sum
-            else:
-                result[naming_map['s']] = self._sum
 
         appendTo.append(result)
 
