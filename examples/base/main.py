@@ -1,7 +1,4 @@
-from senml_pack import SenmlPack
-from senml_record import SenmlRecord
-from senml_unit import SenmlUnits
-from senml_kpn_names import SenmlNames
+from kpn_senml import *
 import utime as time
 
 
@@ -10,9 +7,9 @@ temp = SenmlRecord(SenmlNames.KPN_SENML_TEMPERATURE, unit=SenmlUnits.SENML_UNIT_
 door_pos = SenmlRecord("doorPos", update_time=20, value=True)
 int_val = SenmlRecord("int_val", sum=100)
 
-pack.append(temp)
-pack.append(door_pos)
-pack.append(int_val)
+pack.add(temp)
+pack.add(door_pos)
+pack.add(int_val)
 
 pack.base_time = time.time()
 pack.base_value = 5

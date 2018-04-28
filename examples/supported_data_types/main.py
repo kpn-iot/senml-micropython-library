@@ -1,5 +1,4 @@
-from senml_pack import SenmlPack
-from senml_record import SenmlRecord
+from kpn_senml import *
 import utime as time
 #import cbor2
 
@@ -18,11 +17,11 @@ except Exception as error:
     print(error)
 
 
-pack.append(double_val)
-pack.append(int_val)
-pack.append(bool_val)
-pack.append(str_val)
-pack.append(bytes_val)
+pack.add(double_val)
+pack.add(int_val)
+pack.add(bool_val)
+pack.add(str_val)
+pack.add(bytes_val)
 
 while True:
     print(pack.to_json())

@@ -1,7 +1,7 @@
-import senml_record
+from kpn_senml.senml_record import SenmlRecord
 import ujson
-import cbor_encoder 
-import cbor_decoder
+import kpn_senml.cbor_encoder 
+import kpn_senml.cbor_decoder
 
 class SenmlPackIterator:
     '''an iterator to walk over all records in a pack'''
@@ -180,14 +180,14 @@ class SenmlPack(object):
         :param raw: the raw record definition, as found in the json structure. this still has invalid labels.
         :return: None
         '''
-        rec = senml_record.SenmlRecord(raw[naming_map['n']])
+        rec = SenmlRecord(raw[naming_map['n']])
         rec._from_raw(raw, naming_map)
         if device:
-            device.append(rec)
+            device.add(rec)
             if self.actuate:
                 self.actuate(rec, device=device)
         else:
-            self.append(rec)
+            self.add(rec)
             if self.actuate:
                 self.actuate(rec, device=None)
 
@@ -252,13 +252,13 @@ class SenmlPack(object):
         self._build_rec_dict(naming_map, converted)
         return cbor_encoder.dumps(converted)
 
-    def append(self, item):
+    def add(self, item):
         '''
         adds the item to the list of records
         :param item: {SenmlRecord} the item that needs to be added to the pack
         :return: None
         '''
-        if not (isinstance(item, senml_record.SenmlRecord) or isinstance(item, SenmlPack)):
+        if not (isinstance(item, SenmlRecord) or isinstance(item, SenmlPack)):
             raise Exception('invalid type of param, SenmlRecord or SenmlPack expected')
         if not item._parent == None:
             raise Exception('item is already part of a pack')
@@ -272,10 +272,19 @@ class SenmlPack(object):
         :param item: {SenmlRecord} the item that needs to be removed
         :return: None
         '''
-        if not (isinstance(item, senml_record.SenmlRecord)  or isinstance(item, SenmlPack)):
+        if not (isinstance(item, SenmlRecord)  or isinstance(item, SenmlPack)):
             raise Exception('invalid type of param, SenmlRecord or SenmlPack expected')
         if not item._parent == self:
             raise Exception('item is not part of this pack')
 
         self._data.remove(item)
-        item._parent = None            
+        item._parent = None    
+
+    def clear(self):
+        '''
+        clear the list of the pack
+        :return: None
+        '''
+        for item in self._data:
+            item._parent = None
+        self._data = []        
