@@ -1,4 +1,5 @@
 from kpn_senml.senml_record import SenmlRecord
+from kpn_senml.senml_base import SenmlBase
 import ujson
 import kpn_senml.cbor_encoder 
 import kpn_senml.cbor_decoder
@@ -22,7 +23,7 @@ class SenmlPackIterator:
             raise StopIteration()
 
 
-class SenmlPack(object):
+class SenmlPack(SenmlBase):
     '''
     represents a sneml pack object. This can contain multiple records but also other (child) pack objects.
     When the pack object only contains records, it represents the data of a device.
@@ -258,7 +259,7 @@ class SenmlPack(object):
         :param item: {SenmlRecord} the item that needs to be added to the pack
         :return: None
         '''
-        if not (isinstance(item, SenmlRecord) or isinstance(item, SenmlPack)):
+        if not (isinstance(item, SenmlBase)):
             raise Exception('invalid type of param, SenmlRecord or SenmlPack expected')
         if not item._parent == None:
             raise Exception('item is already part of a pack')
@@ -272,7 +273,7 @@ class SenmlPack(object):
         :param item: {SenmlRecord} the item that needs to be removed
         :return: None
         '''
-        if not (isinstance(item, SenmlRecord)  or isinstance(item, SenmlPack)):
+        if not (isinstance(item, SenmlBase)):
             raise Exception('invalid type of param, SenmlRecord or SenmlPack expected')
         if not item._parent == self:
             raise Exception('item is not part of this pack')
