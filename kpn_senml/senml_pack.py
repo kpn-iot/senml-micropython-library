@@ -155,6 +155,9 @@ class SenmlPack(SenmlBase):
                     cur_pack_el = device
                     new_pack = True
 
+                if naming_map['bv'] in item:                                        # need to copy the base value assigned to the pack element so we can do proper conversion for actuators.
+                    cur_pack_el.base_value = item[naming_map['bv']]
+
                 rec_el = [x for x in cur_pack_el._data if x.name == item[naming_map['n']] ]
                 if len(rec_el) > 0:
                     rec_el[0].do_actuate(item, naming_map)
@@ -182,13 +185,14 @@ class SenmlPack(SenmlBase):
         :return: None
         '''
         rec = SenmlRecord(raw[naming_map['n']])
-        rec._from_raw(raw, naming_map)
         if device:
             device.add(rec)
+            rec._from_raw(raw, naming_map)
             if self.actuate:
                 self.actuate(rec, device=device)
         else:
             self.add(rec)
+            rec._from_raw(raw, naming_map)
             if self.actuate:
                 self.actuate(rec, device=None)
 
