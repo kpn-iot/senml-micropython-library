@@ -4,7 +4,7 @@ Check out the [detailed docs]() for an in-depth explanation of all the features 
  
 The following api sections are available:
 
-- [senml-base](): the base class for all senml objects.
+- [senml-base](./senml_base): the base class for all senml objects.
 - [senml-pack](): the class that represents root documents.
 - [senml-record](): the class that stores sensor measurements
 - [senml-unit](): the list of all unit names that can be used.
