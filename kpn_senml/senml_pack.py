@@ -1,8 +1,8 @@
 from kpn_senml.senml_record import SenmlRecord
 from kpn_senml.senml_base import SenmlBase
 import ujson
-import kpn_senml.cbor_encoder 
-import kpn_senml.cbor_decoder
+import kpn_senml.cbor_encoder as cbor_encoder
+import kpn_senml.cbor_decoder as cbor_decoder
 
 class SenmlPackIterator:
     '''an iterator to walk over all records in a pack'''
